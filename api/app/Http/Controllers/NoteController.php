@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\History;
 use App\Models\Note;
+use App\Models\NoteTag;
+use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,9 +20,9 @@ class NoteController extends Controller
     public function index(): JsonResponse
     {
         $notes = Note::query()
-                        ->with(['user', 'tags', 'sharedWith', 'attachments'])
-                        ->where('user_id', Auth::user()->id)
-                        ->get();
+            ->with(['user', 'tags', 'tags.notes', 'sharedWith', 'attachments'])
+            ->where('user_id', Auth::user()->id)
+            ->get();
 
         return response()->json([
             'status' => 200,
@@ -36,7 +38,7 @@ class NoteController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
         if ($validate->fails()) {
@@ -78,7 +80,9 @@ class NoteController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'description' => 'required'
+            'description' => 'required',
+            'tags' => 'required|array',
+            'user_id' => 'required|integer'
         ]);
 
         if ($validate->fails()) {
@@ -90,8 +94,39 @@ class NoteController extends Controller
         $note->update([
             'title' => $request['title'],
             'description' => $request['description'],
-            'in_history' => false
+            'in_history' => false,
+            'user_id' => $request['user_id']
         ]);
+
+        NoteTag::query()->where('note_id', $note->id)->delete();
+
+        $requestTags = $request->input("tags", []);
+
+        if (! empty($requestTags)) {
+            foreach ($requestTags as $requestTag) {
+                $tagId   = isset($requestTag['id']) ? $requestTag['id'] : null;
+                $tagName = isset($requestTag['name']) ? $requestTag['name'] : $requestTag;
+
+                if ($tagId) {
+                    $tag = Tag::query()->find($tagId);
+                } else {
+                    $tag = Tag::query()->where('name', $tagName)->first();
+                }
+
+                if (! $tag) {
+                    $tag = Tag::query()->create([
+                        'name' => $tagName,
+                    ]);
+                }
+
+                NoteTag::query()->create([
+                    'note_id' => $note->id,
+                    'tag_id'  => $tag->id,
+                ]);
+            }
+        }
+
+        $note = Note::with(['tags', 'user', 'sharedWith', 'attachments'])->find($note->id);
 
         $note->save();
 

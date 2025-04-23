@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AttachmentsController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ShareController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +22,21 @@ Route::prefix('/v1')->group(function () {
             return $request->user();
         })->middleware('auth:sanctum');
 
-        Route::post('/note/{id}/attachments', [ShareController::class, 'store']);
+        Route::get('/users', function () {
+            return response()->json([
+                'status' => 200,
+                'message' => 'List of Users',
+                'users' => User::all(),
+            ]);
+        });
+
+        Route::post('/note/{id}/attachments', [AttachmentsController::class, 'store']);
         Route::get('/tags', [TagController::class, 'index']);
         Route::get('/histories', [HistoryController::class, 'index']);
         Route::post('/share', [ShareController::class, 'store']);
+        Route::get('/share', [ShareController::class, 'index']);
         Route::get('/share/{id}/show', [ShareController::class, 'show']);
         Route::apiResource('notes', NoteController::class);
     });
 });
+

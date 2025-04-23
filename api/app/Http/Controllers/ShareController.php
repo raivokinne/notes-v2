@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Note;
 use App\Models\SharedNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +19,7 @@ class ShareController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return $this->incorrectPayload($validate->errors());
+            return $this->incorrectpayload($validate->errors());
         }
 
         $token = Str::random(8);
@@ -32,8 +33,50 @@ class ShareController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Note has been shared',
-            'token' => $sharedNote,
-            'url' => 'http://localhost:5173/share/' + $sharedNote->id
+            'token' => $token,
+            'url' => 'http://localhost:5173/share/' . $sharedNote->id
+        ]);
+    }
+
+    public function verify(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'token' => 'required|string|min:8'
+        ]);
+
+        if ($validate->fails()) {
+            return $this->incorrectpayload($validate->errors());
+        }
+
+        $sharedNote = SharedNote::query()->where('token', $request->token)->first();
+
+        if (!$sharedNote) {
+            return $this->incorrectpayload(['token' => 'Incorrect Token']);
+        }
+
+        $note = Note::query()->where('id', $sharedNote->note_id)->first();
+
+        $note->update([
+            'user_id' => $sharedNote->user_id
+        ]);
+
+        $note->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'You have access to note',
+            'note' => $note
+        ]);
+    }
+
+    public function index()
+    {
+        $sharedNotes = SharedNote::query()->with(['note', 'user'])->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'List of shared notes',
+            'sharedNotes' => $sharedNotes
         ]);
     }
 
@@ -46,7 +89,7 @@ class ShareController extends Controller
             'message' => 'Shared note',
             'note' => $sharedNote,
             'token' => $sharedNote->token,
-            'url' => 'http://localhost:5173/share/' + $sharedNote->id
+            'url' => 'http://localhost:5173/share/' . $sharedNote->id
         ]);
     }
 }

@@ -12,7 +12,8 @@ export type Note = {
     id: number,
     title: string,
     description: string,
-    in_history: string,
+    in_history: number,
+	user_id: number,
     user: User,
     tags: Tag[],
     sharedWith: User,
@@ -44,6 +45,7 @@ export type History = {
     id: number,
     user_id: number,
     note_id: number,
+	expires: string,
     note: Note,
     user: User
 }

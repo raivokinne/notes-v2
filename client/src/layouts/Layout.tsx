@@ -6,7 +6,7 @@ export function Layout({children}: {children: React.ReactNode}) {
             <header>
                 <Navbar />
             </header>
-            <main>
+            <main className="flex justify-items-center items-center w-full">
                 {children}
             </main>
         </>

@@ -10,6 +10,7 @@ class SharedNote extends Model
     protected $fillable = [
         'note_id',
         'user_id',
+        'token',
     ];
 
     public function note(): BelongsTo

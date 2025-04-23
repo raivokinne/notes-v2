@@ -12,14 +12,14 @@ class AttachmentsController extends Controller
     public function store(Request $request, string $id): JsonResponse
     {
         $validate = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpg,png,gif,svg|max:2048'
+            'file' => 'required|image|mimes:jpg,png,gif,svg|max:2048'
         ]);
 
         if ($validate->fails()) {
             return $this->incorrectPayload($validate->errors());
         }
 
-        $file = $request->file('image');
+        $file = $request->file('file');
         $filename = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('attachments', $filename, 'public');
 
