@@ -38,17 +38,20 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Project Requirements',
                 'description' => 'List of requirements for the new project...',
-                'tags' => ['Work', 'Project']
+                'tags' => ['Work', 'Project'],
+                'role' => 'owner'
             ],
             [
                 'title' => 'Meeting Notes',
                 'description' => 'Points discussed in today\'s meeting...',
-                'tags' => ['Work', 'Meeting']
+                'tags' => ['Work', 'Meeting'],
+                'role' => 'owner'
             ],
             [
                 'title' => 'Research on Laravel',
                 'description' => 'Notes from research on Laravel framework...',
-                'tags' => ['Learning', 'Research']
+                'tags' => ['Learning', 'Research'],
+                'role' => 'owner'
             ],
         ];
 
@@ -56,17 +59,20 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Ideas for Birthday Gift',
                 'description' => 'Gift ideas for upcoming birthday...',
-                'tags' => ['Personal']
+                'tags' => ['Personal'],
+                'role' => 'owner'
             ],
             [
                 'title' => 'Monthly Budget',
                 'description' => 'Budget planning for next month...',
-                'tags' => ['Finance', 'Personal']
+                'tags' => ['Finance', 'Personal'],
+                'role' => 'owner'
             ],
             [
                 'title' => 'Vacation Planning',
                 'description' => 'Places to visit during upcoming vacation...',
-                'tags' => ['Personal', 'Ideas']
+                'tags' => ['Personal', 'Ideas'],
+                'role' => 'owner'
             ],
         ];
 

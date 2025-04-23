@@ -61,13 +61,25 @@ class User extends Authenticatable
             'user_id',
             'note_id'
         )
-        ->using(SharedNote::class)
-        ->withPivot('token');
+            ->withPivot('token');
     }
 
 
     public function histories(): HasMany
     {
         return $this->hasMany(History::class);
+    }
+
+    public function allAccessibleNotes()
+    {
+        $ownedNotes = $this->notes()
+            ->with(['user', 'tags', 'tags.notes', 'users', 'attachments'])
+            ->get();
+
+        $sharedNotes = $this->sharedNotes()
+            ->with(['user', 'tags', 'tags.notes', 'users', 'attachments'])
+            ->get();
+
+        return $ownedNotes->merge($sharedNotes);
     }
 }

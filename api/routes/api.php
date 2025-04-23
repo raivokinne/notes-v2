@@ -34,9 +34,11 @@ Route::prefix('/v1')->group(function () {
         Route::get('/tags', [TagController::class, 'index']);
         Route::get('/histories', [HistoryController::class, 'index']);
         Route::post('/share', [ShareController::class, 'store']);
+        Route::post('/share/verify', [ShareController::class, 'verify']);
         Route::get('/share', [ShareController::class, 'index']);
-        Route::get('/share/{id}/show', [ShareController::class, 'show']);
+        Route::get('/share/{id}', [ShareController::class, 'show']);
+        Route::get('/my-shared-notes', [ShareController::class, 'mySharedNotes']);
+        Route::post('/revoke-access', [ShareController::class, 'revokeAccess']);
         Route::apiResource('notes', NoteController::class);
     });
 });
-

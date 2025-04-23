@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,7 +13,8 @@ class Note extends Model
         'title',
         'description',
         'user_id',
-        'in_history'
+        'in_history',
+        'role'
     ];
 
     public function user(): BelongsTo
@@ -27,13 +27,14 @@ class Note extends Model
         return $this->belongsToMany(Tag::class, 'note_tags', 'tag_id', 'note_id');
     }
 
-    public function sharedWith(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'shared_notes', 'user_id', 'note_id');
-    }
-
     public function attachments(): HasMany
     {
         return $this->hasMany(NoteAttachment::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'shared_notes', 'note_id', 'user_id')
+            ->withTimestamps();
     }
 }

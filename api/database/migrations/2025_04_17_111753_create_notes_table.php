@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
+            $table->enum('role', ['owner', 'editor', 'viewer'])->default('editor');
             $table->boolean('in_history')->default(false);
             $table->timestamps();
         });
